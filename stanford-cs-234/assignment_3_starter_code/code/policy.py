@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.distributions as ptd
+import numpy as np 
 
 from network_utils import np2torch, device
 
@@ -39,7 +40,7 @@ class BasePolicy:
         observations = np2torch(observations)
         #######################################################
         #########   YOUR CODE HERE - 1-3 lines.    ############
-
+        sampled_actions = np.array(self.action_distriution(observations))
         #######################################################
         #########          END YOUR CODE.          ############
         return sampled_actions
@@ -62,7 +63,7 @@ class CategoricalPolicy(BasePolicy, nn.Module):
         """
         #######################################################
         #########   YOUR CODE HERE - 1-2 lines.    ############
-
+        distribution = self.network(observations)
         #######################################################
         #########          END YOUR CODE.          ############
         return distribution
@@ -80,7 +81,7 @@ class GaussianPolicy(BasePolicy, nn.Module):
         self.network = network
         #######################################################
         #########   YOUR CODE HERE - 1 line.       ############
-
+        self.log_std = nn.Parameter(action_dim)
         #######################################################
         #########          END YOUR CODE.          ############
 
@@ -94,7 +95,7 @@ class GaussianPolicy(BasePolicy, nn.Module):
         """
         #######################################################
         #########   YOUR CODE HERE - 1 line.       ############
-
+        std = self.log_std()
         #######################################################
         #########          END YOUR CODE.          ############
         return std
@@ -118,7 +119,8 @@ class GaussianPolicy(BasePolicy, nn.Module):
         """
         #######################################################
         #########   YOUR CODE HERE - 2-4 lines.    ############
-
+        # https://discuss.pytorch.org/t/how-to-calculate-the-multivariate-normal-distribution-using-pytorch-and-math/105943
+        distribution = torch.distributions.multivariate_normal.MultivariateNormal(loc=self.network(observations), covariance_matrix=self.std(observations))
         #######################################################
         #########          END YOUR CODE.          ############
         return distribution
