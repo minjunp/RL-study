@@ -28,8 +28,16 @@ def build_mlp(input_size, output_size, n_layers, size):
             for _ in range(n_layers):
                 nn.Linear(in_features=size, out_features=size),
                 nn.ReLU()
+
+    # out = nn.Sequential(nn.Linear(in_features=input_size, out_features=size), 
+    #                     Repeat(),
+    #                     nn.Linear(in_features=size, out_features=output_size)
+    #                     )
+
+    # TODO find way to implement for-loop
     out = nn.Sequential(nn.Linear(in_features=input_size, out_features=size), 
-                        Repeat(),
+                        nn.Linear(in_features=size, out_features=size), 
+                        nn.ReLU(),
                         nn.Linear(in_features=size, out_features=output_size)
                         )
     return out

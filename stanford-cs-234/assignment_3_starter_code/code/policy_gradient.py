@@ -72,6 +72,14 @@ class PolicyGradient(object):
         """
         #######################################################
         #########   YOUR CODE HERE - 8-12 lines.   ############
+        BasePolicy = build_mlp(self.config.input_size, self.config.output_size, self.config.n_layers, self.config.size)
+        if self.discrete:
+            self.policy = CategoricalPolicy(BasePolicy)
+        else:
+            self.policy = GaussianPolicy(BasePolicy)
+
+        ## TODO: create optimizer -- how?
+        optimizer = torch.optim.Adam(self.policy.parameters(), lr=self.lr)
 
         #######################################################
         #########          END YOUR CODE.          ############
@@ -190,7 +198,10 @@ class PolicyGradient(object):
             rewards = path["reward"]
             #######################################################
             #########   YOUR CODE HERE - 5-10 lines.   ############
-
+            # https://github.com/ksang/cs234-assignments/blob/master/assignment3_coding/starter_code%202/code/policy_network.py
+            returns = np.copy(rewards)
+            for t in reversed(range(len(rewards)-1)):
+                returns[t] = rewards[t] + self.config.gamma * rewards[t+1]
             #######################################################
             #########          END YOUR CODE.          ############
             all_returns.append(returns)
@@ -215,7 +226,7 @@ class PolicyGradient(object):
         """
         #######################################################
         #########   YOUR CODE HERE - 1-2 lines.    ############
-
+        normalized_advantages = (advantages - np.mean(advantages)) / np.std(advantages)
         #######################################################
         #########          END YOUR CODE.          ############
         return normalized_advantages
@@ -268,7 +279,7 @@ class PolicyGradient(object):
         advantages = np2torch(advantages)
         #######################################################
         #########   YOUR CODE HERE - 5-7 lines.    ############
-
+        self.policy = self.policy
         #######################################################
         #########          END YOUR CODE.          ############
 

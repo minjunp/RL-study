@@ -25,7 +25,8 @@ class BaselineNetwork(nn.Module):
 
         #######################################################
         #########   YOUR CODE HERE - 2-8 lines.   #############
-
+        self.network = build_mlp(self.config.input_size, self.config.output_size, self.config.n_layers, self.config.size)
+        self.optimizer = torch.optim.Adam(self.network.parameters(), lr=self.lr)
         #######################################################
         #########          END YOUR CODE.          ############
 
@@ -49,7 +50,7 @@ class BaselineNetwork(nn.Module):
         """
         #######################################################
         #########   YOUR CODE HERE - 1 lines.     #############
-
+        output = torch.squeeze(observations, 1)
         #######################################################
         #########          END YOUR CODE.          ############
         assert output.ndim == 1
@@ -77,7 +78,8 @@ class BaselineNetwork(nn.Module):
         observations = np2torch(observations)
         #######################################################
         #########   YOUR CODE HERE - 1-4 lines.   ############
-
+        baseline = self.forward(self.baseline, observations)
+        advantages = returns - baseline
         #######################################################
         #########          END YOUR CODE.          ############
         return advantages
@@ -100,6 +102,9 @@ class BaselineNetwork(nn.Module):
         observations = np2torch(observations)
         #######################################################
         #########   YOUR CODE HERE - 4-10 lines.  #############
-
+        loss_func = nn.MSELoss()
+        loss = loss_func(returns, observations)
+        loss.backward() # Back Propagation
+        self.optimizer.step() # Gardient Descent
         #######################################################
         #########          END YOUR CODE.          ############
