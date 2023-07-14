@@ -1,1 +1,1 @@
-# RL-study
+# Stanford CS-234 study
