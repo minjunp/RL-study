@@ -1,0 +1,4 @@
+gym==0.7.4
+matplotlib
+numpy
+scipy
